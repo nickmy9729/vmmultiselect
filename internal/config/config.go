@@ -16,13 +16,13 @@ func LoadConfig(filename string) (*Config, error) {
 	}
 	defer file.Close()
 
-	var config Config
+	var cfg Config
 	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&config)
+	err = decoder.Decode(&cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	return &config, nil
+	return &cfg, nil
 }
 

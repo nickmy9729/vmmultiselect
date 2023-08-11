@@ -1,0 +1,12 @@
+{
+  "groups": {
+    "group1": [
+      "http://vm1:8428",
+      "http://vm2:8428"
+    ],
+    "group2": [
+      "http://vm3:8428",
+      "http://vm4:8428"
+    ]
+  }
+}
