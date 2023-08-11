@@ -5,10 +5,11 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"time"
 
-	"github.com/nickmy9729/vmmultiselect/internal/config"
-	"github.com/nickmy9729/vmmultiselect/internal/api"
-	"github.com/nickmy9729/vmmultiselect/internal/vmmultiselect"
+	"github.com/yourusername/vmmultiselect/config"
+	"github.com/yourusername/vmmultiselect/internal/api"
+	"github.com/yourusername/vmmultiselect/internal/vmmultiselect"
 )
 
 // Define a simple template for rendering the health status.
@@ -46,19 +47,13 @@ func main() {
 			"X-GROUP": []string{groupName},
 		}
 
-		data, err := vmmultiselect.ExecuteVMSelect(cfg, groupName, headers)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Error executing VMSelect: %s", err), http.StatusInternalServerError)
-			return
-		}
+		// Specify the timeout for health check requests
+		timeout := 2 * time.Second
 
-		// Parse the health template
-		tmpl := template.Must(template.New("health").Parse(healthTemplate))
-
-		// Display health status
+		// Perform health checks with timeout
 		statusMap := make(map[string]string)
 		for _, endpoint := range cfg.Groups[groupName] {
-			_, err := api.MakeAPIRequest(endpoint+"/health", headers)
+			_, err := api.MakeAPIRequestWithTimeout(endpoint+"/health", headers, timeout)
 			if err != nil {
 				statusMap[endpoint] = "Unhealthy"
 			} else {
@@ -66,6 +61,8 @@ func main() {
 			}
 		}
 
+		// Render the template with the health status data
+		tmpl := template.Must(template.New("health").Parse(healthTemplate))
 		tmplData := struct {
 			GroupName string
 			HealthMap map[string]string
@@ -73,9 +70,7 @@ func main() {
 			GroupName: groupName,
 			HealthMap: statusMap,
 		}
-
-		// Render the template with the data
-		err = tmpl.Execute(w, tmplData)
+		err := tmpl.Execute(w, tmplData)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error rendering template: %s", err), http.StatusInternalServerError)
 		}

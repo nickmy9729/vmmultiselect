@@ -1,15 +1,20 @@
 package api
 
 import (
+	"context"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
-// MakeAPIRequest makes an HTTP GET request to the specified endpoint with the provided headers.
-// It returns the response body as a byte slice.
-func MakeAPIRequest(endpoint string, headers http.Header) ([]byte, error) {
+// MakeAPIRequestWithTimeout makes an HTTP GET request to the specified endpoint with the provided headers
+// and a specified timeout. It returns the response body as a byte slice.
+func MakeAPIRequestWithTimeout(endpoint string, headers http.Header, timeout time.Duration) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
