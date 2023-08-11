@@ -7,9 +7,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/yourusername/vmmultiselect/config"
-	"github.com/yourusername/vmmultiselect/internal/api"
-	"github.com/yourusername/vmmultiselect/internal/vmmultiselect"
+	"github.com/nickmy9729/vmmultiselect/internal/config"
+	"github.com/nickmy9729/vmmultiselect/internal/api"
+	"github.com/nickmy9729/vmmultiselect/internal/vmmultiselect"
 )
 
 // Define a simple template for rendering the health status.
