@@ -5,11 +5,11 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/nickmy9729/vmmultiselect/internal/config"
 	"github.com/nickmy9729/vmmultiselect/internal/api"
-	"github.com/nickmy9729/vmmultiselect/internal/vmmultiselect"
 )
 
 // Define a simple template for rendering the health status.
@@ -75,6 +75,41 @@ func main() {
 			http.Error(w, fmt.Sprintf("Error rendering template: %s", err), http.StatusInternalServerError)
 		}
 	})
+
+	http.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
+		groupName := r.URL.Query().Get("group")
+		if groupName == "" {
+			http.Error(w, "Missing 'group' query parameter", http.StatusBadRequest)
+			return
+		}
+
+		headers := http.Header{
+			"X-GROUP": []string{groupName},
+		}
+
+		// Specify the timeout for API requests
+		timeout := 2 * time.Second
+
+		// Extract the endpoint from the URL path
+		endpoint := strings.TrimPrefix(r.URL.Path, "/api/")
+
+		// Perform API requests with timeout and combine results
+		var combinedData []byte
+		for _, vmEndpoint := range cfg.Groups[groupName] {
+			data, err := api.MakeAPIRequestWithTimeout(vmEndpoint+"/"+endpoint, headers, timeout)
+			if err == nil {
+				combinedData = append(combinedData, data...)
+			}
+		}
+
+		// Return the combined data
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(combinedData)
+	})
+
+	// Serve API documentation from the "docs" directory
+	http.Handle("/docs/", http.FileServer(http.Dir("docs")))
 
 	fmt.Println("Listening on :8080...")
 	err = http.ListenAndServe(":8080", nil)
