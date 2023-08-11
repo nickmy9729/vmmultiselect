@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+// MakeAPIRequest makes an HTTP GET request to the specified endpoint with the provided headers
+// and returns the response body as a byte slice.
+func MakeAPIRequest(endpoint string, headers http.Header) ([]byte, error) {
+	return MakeAPIRequestWithTimeout(endpoint, headers, 0)
+}
+
 // MakeAPIRequestWithTimeout makes an HTTP GET request to the specified endpoint with the provided headers
 // and a specified timeout. It returns the response body as a byte slice.
 func MakeAPIRequestWithTimeout(endpoint string, headers http.Header, timeout time.Duration) ([]byte, error) {
