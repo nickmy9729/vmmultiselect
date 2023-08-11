@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/nickmy9729/vmmultiselect/config"
+	"github.com/nickmy9729/vmmultiselect/internal/config"
 	"github.com/nickmy9729/vmmultiselect/internal/api"
 	"github.com/nickmy9729/vmmultiselect/internal/vmmultiselect"
 )
