@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/nickmy9729/vmmultiselect/config"
+	"github.com/nickmy9729/vmmultiselect/internal/config"
 	"github.com/nickmy9729/vmmultiselect/internal/api"
 )
 
